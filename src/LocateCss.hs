@@ -3,7 +3,7 @@ module LocateCss where
 import Test.QuickCheck
 import CssSelector
 import ParseCss
-import Dom
+import DomNode
 
 locateCss :: String -> DomNode -> [DomNode]
 locateCss selector =

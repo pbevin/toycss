@@ -3,7 +3,6 @@ module CssSelectorSpec where
 import Test.QuickCheck
 import Test.Hspec
 import Dom
-import LocateCss
 
 nodeWithClass name cls = Node (NodeAttrs name Nothing [cls])
 nodeWithId name id = Node (NodeAttrs name (Just id) [])
