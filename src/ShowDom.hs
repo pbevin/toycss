@@ -4,12 +4,15 @@ import Text.PrettyPrint
 import DomNode
 
 ppdom :: DomNode -> String
-ppdom = render . ppdom' 0
+ppdom = render . showdom
+
+showdom :: DomNode -> Doc
+showdom = showdom' 0
   where
-    ppdom' n (Text t) = text t
-    ppdom' n node = vcat $
+    showdom' n (Text t) = text t
+    showdom' n node = vcat $
       [ angle (nodeOpen node),
-        nest 2 $ cat (map (ppdom' $ n+1) $ nodeChildren node),
+        nest 2 $ cat (map (showdom' $ n+1) $ nodeChildren node),
         angle $ text ("/" ++ nodeName node) ]
 
 nodeOpen :: DomNode -> Doc

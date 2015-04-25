@@ -43,7 +43,8 @@ arbIdent = do
   x <- choose ('a', 'z')
   return [x]
 
-arbClasses = oneof [ return [], vectorOf 1 arbIdent, vectorOf 2 arbIdent ]
+arbClasses = oneof [ return [], vectorOf 1 arbClassName, vectorOf 2 arbClassName ]
+arbClassName = elements [ "big", "small", "title", "lhs" ]
 
 nodeWithText name = do
   attrs <- arbAttrs name

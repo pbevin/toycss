@@ -1,7 +1,7 @@
 module LocateCss where
 
 import Test.QuickCheck
-import CssSelector
+import CssTypes
 import ParseCss
 import DomNode
 

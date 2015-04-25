@@ -1,4 +1,4 @@
-module Dom 
+module Dom
   ( DomNode (..)
   , NodeAttrs (..)
   , nodeChildren
@@ -10,11 +10,19 @@ module Dom
   , ss
   , p
   , ppdom
+  , CssSelector (..)
+  , CssDecl (..)
+  , CssRule
   , locateCss
+  , c
+  , h
   )
 where
 
 import DomNode
-import GenDom
 import ShowDom
+import CssTypes
 import LocateCss
+import GenDom
+import GenCss
+import GenHtml

@@ -1,6 +1,6 @@
 module ParseCss where
 
-import CssSelector
+import CssTypes
 
 parseSelector :: String -> CssSelector
 parseSelector sel = foldl1 DescendantMatch (map parseSingle $ words sel)
