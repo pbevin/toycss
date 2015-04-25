@@ -1,23 +1,53 @@
 module Dom where
 
-import Control.Applicative
+import Control.Applicative hiding (empty)
 import Data.List
 import Test.QuickCheck
 import Text.PrettyPrint
+import Debug.Trace
 
-data DomNode = Node String [DomNode] | Text String deriving (Show,Eq)
+data NodeAttrs = NodeAttrs { nName :: String,
+                             nId :: Maybe String,
+                             nClass :: [String] }
+                             deriving (Show, Eq)
+
+data DomNode = Text String
+             | Node NodeAttrs [DomNode]
+               deriving (Show,Eq)
+
+attrs name = NodeAttrs name Nothing []
+
+nodeChildren (Node _ children) = children
+nodeChildren (Text _) = []
+
+nodeName (Node attrs _) = nName attrs
+
+domNode :: String -> [DomNode] -> DomNode
+domNode name children = Node (attrs name) children
 
 ppdom :: DomNode -> String
 ppdom = render . ppdom' 0
   where
     ppdom' n (Text t) = text t
-    ppdom' n (Node name children) = cat $
-      [ angle name,
-        nest (2*n+2) $ vcat (map (ppdom' $ n+1) children),
-        angle ("/" ++ name) ]
+    ppdom' n node = vcat $
+      [ angle (nodeOpen node),
+        nest 2 $ cat (map (ppdom' $ n+1) $ nodeChildren node),
+        angle $ text ("/" ++ nodeName node) ]
 
-angle :: String -> Doc
-angle name = text ("<" ++ name ++ ">")
+nodeOpen :: DomNode -> Doc
+nodeOpen (Node attrs _) =
+  sep  [ text $ nName attrs,
+         maybe empty (attr "id") (nId attrs),
+         attr "class" (unwords $ nClass attrs) ]
+
+attr :: String -> String -> Doc
+attr key value = if null value
+                 then empty
+                 else text key <> text "=" <> doubleQuotes (text value)
+
+
+angle :: Doc -> Doc
+angle name = text "<" <> name <> text ">"
 
 instance Arbitrary DomNode where
   arbitrary = sized $ arbNode flowNodes []
@@ -32,19 +62,36 @@ arbNode allowed forbidden n =
 
 node :: Int -> Int -> [NodeName] -> [NodeName] -> Gen DomNode
 node size n allowed forbidden = do
-  name <- elements allowed
+  name <- elements (allowed \\ forbidden)
   if size == 0
-  then return $ Node name
+  then frequency [ (1, Node <$> arbAttrs name <*> pure []),
+                   (3, nodeWithText name) ]
   else do
     let n' = (n-1) `div` size
     subs <- children name size n' allowed forbidden
-    return $ Node name subs
+    attrs <- arbAttrs name
+    return $ Node attrs subs
+      where
+        children :: NodeName -> Int -> Int -> [NodeName] -> [NodeName] -> Gen [DomNode]
+        children name size n allowed forbidden = vectorOf size $ do
+          let a' = allowed `intersect` (subNodes name)
+          let f' = forbidden `union` (forbiddenSubNodes name)
+          arbNode a' f' n
 
-children :: NodeName -> Int -> Int -> [NodeName] -> [NodeName] -> Gen [DomNode]
-children name size n allowed forbidden = vectorOf size $ do
-  let a' = allowed `intersect` (subNodes name)
-  let f' = forbidden `union` (forbiddenSubNodes name)
-  arbNode a' f' n
+arbAttrs :: String -> Gen NodeAttrs
+arbAttrs name = NodeAttrs name <$> arbId <*> arbClasses
+
+arbId = frequency [ (3, pure Nothing), (1, Just <$> arbIdent) ]
+arbIdent = do
+  x <- choose ('a', 'z')
+  return [x]
+
+arbClasses = oneof [ return [], vectorOf 1 arbIdent, vectorOf 2 arbIdent ]
+
+nodeWithText name = do
+  attrs <- arbAttrs name
+  text <- Text <$> arbText
+  return $ Node attrs [text]
 
 type NodeName = String
 subNodes :: NodeName -> [NodeName]
@@ -78,8 +125,11 @@ arbNodeName = elements [ "h1", "h2", "div", "span", "form", "p", "a" ]
 arbNodeNameNoContent :: Gen String
 arbNodeNameNoContent = elements [ "input" ]
 
-arbText = elements ["Lorem Ipsum", "Dolor sit amet", "..."]
-
+arbText = elements [ "Lorem Ipsum",
+                     "Dolor sit amet",
+                     "consectetur adipiscing elit",
+                     "Vestibulum vel ante",
+                     "ut turpis dapibus blandit" ]
 
 size :: DomNode -> Int
 size n = 1
@@ -87,7 +137,8 @@ size n = 1
 prop_hasSize :: DomNode -> Bool
 prop_hasSize node = size node == 2
 
-s = sample (arbitrary :: Gen DomNode)
+s  = sample' (arbitrary :: Gen DomNode) >>= putStrLn . unlines . map show
+ss = sample' (arbitrary :: Gen DomNode) >>= (return . map ppdom) >>= putStrLn . unlines
 
 p :: DomNode -> IO ()
 p = putStrLn . ppdom
