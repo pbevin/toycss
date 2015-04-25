@@ -21,6 +21,8 @@ nodeChildren (Node _ children) = children
 nodeChildren (Text _) = []
 
 nodeName (Node attrs _) = nName attrs
+nodeId (Node attrs _) = nId attrs
+nodeClasses (Node attrs _) = nClass attrs
 
 domNode :: String -> [DomNode] -> DomNode
 domNode name children = Node (attrs name) children

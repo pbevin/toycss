@@ -6,12 +6,14 @@ import Dom
 import LocateCss
 
 nodeWithClass name cls = Node (NodeAttrs name Nothing [cls])
+nodeWithId name id = Node (NodeAttrs name (Just id) [])
 
 spec :: Spec
 spec = do
   let p = domNode "p" []
   let pp = domNode "p" [domNode "p" []]
   let bigdiv = nodeWithClass "div" "big" []
+  let magicdiv = nodeWithId "div" "magic" []
 
   describe "locateCss" $ do
     it "can find a tag by its name" $ do
@@ -32,17 +34,21 @@ spec = do
     it "can find multiple matching tags" $ do
       locateCss "div p" (domNode "div" [p, p]) `shouldBe` [p, p]
 
-    -- it "can find a node by class" $ do
-    --   locateCss ".big" bigdiv `shouldBe` [bigdiv]
+    it "can find a node by class" $ do
+      locateCss ".big" bigdiv `shouldBe` [bigdiv]
 
-    -- it "can reject a node by class" $ do
-    --   locateCss ".small" bigdiv `shouldBe` []
+    it "can reject a node by class" $ do
+      locateCss ".small" bigdiv `shouldBe` []
 
-    -- it "can find a node by name and class" $ do
-    --   locateCss "div.big" bigdiv `shouldBe` [bigdiv]
-    --   locateCss "div.small" bigdiv `shouldBe` []
-    --   locateCss "p.big" bigdiv `shouldBe` []
+    it "can find a node by name and class" $ do
+      locateCss "div.big" bigdiv `shouldBe` [bigdiv]
+      locateCss "div.small" bigdiv `shouldBe` []
+      locateCss "p.big" bigdiv `shouldBe` []
 
+    it "can find a node by ID" $ do
+      locateCss "#magic" magicdiv `shouldBe` [magicdiv]
+      locateCss "div#magic" magicdiv `shouldBe` [magicdiv]
+      locateCss "div#magic" bigdiv `shouldBe` []
 
     it "recognizes the outer tree" $ property prop_find_outer
     it "works with subtrees" $ property prop_find_multi

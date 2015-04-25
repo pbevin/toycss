@@ -1,23 +1,28 @@
-module LocateCss (locateCss) where
+module LocateCss where
 
 import Test.QuickCheck
+import CssSelector
+import ParseCss
 import Dom
 
 locateCss :: String -> DomNode -> [DomNode]
-locateCss selector = map last . filter match . allPaths
-  where match = pathMatch (words selector)
+locateCss selector =
+  let css = parseSelector selector
+  in map last . filter (pathMatch css) . allPaths
 
 allPaths :: DomNode -> [[DomNode]]
 allPaths (Text _) = []
 allPaths node = [[node]] ++ (map (node:) $ concatMap allPaths (nodeChildren node))
 
-pathMatch :: [String] -> [DomNode] -> Bool
-pathMatch [] [] = True
-pathMatch (x:xs) (n:ns) =
-  if cssMatch x n
-  then pathMatch xs ns || pathMatch (x:xs) ns
-  else pathMatch (x:xs) ns
-pathMatch _ _ = False
-
-cssMatch :: String -> DomNode -> Bool
-cssMatch x node = x == nodeName node
+pathMatch :: CssSelector -> [DomNode] -> Bool
+pathMatch css nodes@(n:ns) = case css of
+  AnyMatch -> True
+  NameMatch n -> n == nodeName (last nodes)
+  ClassMatch c -> c `elem` nodeClasses (last nodes)
+  IdMatch id -> Just id == nodeId (last nodes)
+  CombinedMatch a b -> pathMatch a nodes && pathMatch b nodes
+  DescendantMatch a b -> any (splitMatch a b) (splits nodes)
+    where
+      splits xs = [ splitAt n xs | n <- [0..length xs] ]
+      splitMatch a b (as, bs) = pathMatch a as && pathMatch b bs
+pathMatch _ [] = False
