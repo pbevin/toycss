@@ -10,14 +10,17 @@ import GenDom
 import ShowCss
 import ShowDom
 
-genHtml :: Gen String
-genHtml = do
-  (css, dom) <- arbitrary
-  return $ render $ pphtml css (addIdsToDom dom)
+type HtmlDoc = ([CssRule], [DomNode])
+
+genHtml :: Gen HtmlDoc
+genHtml = arbitrary
+
+renderHtml :: HtmlDoc -> String
+renderHtml (css, dom) = render $ pphtml css (addIdsToDom dom)
 
 
 h :: IO ()
-h  = generate genHtml >>= putStrLn
+h  = generate genHtml >>= putStrLn . renderHtml
 
 tag :: String -> Doc -> Doc
 tag name doc = vcat [ text ("<" ++ name ++ ">"),

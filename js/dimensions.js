@@ -1,5 +1,11 @@
 var page = require('webpage').create();
-page.open('d.html', function(status) {
+var system = require('system');
+var args = system.args;
+
+console.log(args);
+
+page.viewportSize = { width: 1024, height: 768 };
+page.open(args[1], function(status) {
   var dimensions = page.evaluate(function() {
     return walk(document.body);
 
