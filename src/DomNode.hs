@@ -21,5 +21,8 @@ nodeName (Node attrs _) = nName attrs
 nodeId (Node attrs _) = nId attrs
 nodeClasses (Node attrs _) = nClass attrs
 
+setId :: String -> NodeAttrs -> NodeAttrs
+setId id attrs = attrs { nId = Just id }
+
 domNode :: String -> [DomNode] -> DomNode
 domNode name children = Node (attrs name) children
