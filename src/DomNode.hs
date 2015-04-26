@@ -26,3 +26,12 @@ setId id attrs = attrs { nId = Just id }
 
 domNode :: String -> [DomNode] -> DomNode
 domNode name children = Node (attrs name) children
+
+domNodeWithId :: String -> String -> [DomNode] -> DomNode
+domNodeWithId name id = Node (setId id (attrs name))
+
+
+alphabet = ['A'..'Z'] ++ ['a'..'z'] ++ " "
+
+alpha = map n alphabet
+  where n ch = (domNode "p" [domNodeWithId "a" [ch] [Text [ch, ' ', ch]]])

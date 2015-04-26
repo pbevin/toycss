@@ -15,7 +15,10 @@ module Dom
   , CssRule
   , locateCss
   , c
+  , HtmlDoc (..)
   , h
+  , textWidth
+  , alpha
   )
 where
 
@@ -26,3 +29,4 @@ import LocateCss
 import GenDom
 import GenCss
 import GenHtml
+import TimesRoman

@@ -36,12 +36,7 @@ node size n allowed forbidden = do
           arbNode a' f' n
 
 arbAttrs :: String -> Gen NodeAttrs
-arbAttrs name = NodeAttrs name <$> arbId <*> arbClasses
-
-arbId = frequency [ (3, pure Nothing), (1, Just <$> arbIdent) ]
-arbIdent = do
-  x <- choose ('a', 'z')
-  return [x]
+arbAttrs name = NodeAttrs name <$> pure Nothing <*> arbClasses
 
 arbClasses = oneof [ return [], vectorOf 1 arbClassName, vectorOf 2 arbClassName ]
 arbClassName = elements [ "big", "small", "title", "lhs" ]

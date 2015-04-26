@@ -10,28 +10,38 @@ import GenDom
 import ShowCss
 import ShowDom
 
-type HtmlDoc = ([CssRule], [DomNode])
+newtype HtmlDoc = HtmlDoc ([CssRule], [DomNode]) deriving Show
+htmldoc :: [CssRule] -> [DomNode] -> HtmlDoc
+htmldoc css dom = HtmlDoc (css, dom)
+
+instance Arbitrary HtmlDoc where
+  arbitrary = genHtml
 
 genHtml :: Gen HtmlDoc
-genHtml = arbitrary
+genHtml = do
+  css <- arbitrary
+  dom <- arbitrary
+  return $ HtmlDoc (css, addIdsToDom dom)
 
 renderHtml :: HtmlDoc -> String
-renderHtml (css, dom) = render $ pphtml css (addIdsToDom dom)
+renderHtml (HtmlDoc (css, dom)) = render $ pphtml css dom
 
 
 h :: IO ()
 h  = generate genHtml >>= putStrLn . renderHtml
 
-tag :: String -> Doc -> Doc
-tag name doc = vcat [ text ("<" ++ name ++ ">"),
+content :: String -> Doc -> Doc
+content name doc = vcat [ text ("<" ++ name ++ ">"),
                       nest 2 doc,
                       text ("</" ++ name ++ ">") ]
 
 pphtml :: [CssRule] -> [DomNode] -> Doc
-pphtml css dom = tag "html" $ vcat [ hhead css, hbody dom ]
+pphtml css dom = content "html" $ hhead css $$ hbody dom
 
-hhead css = tag "head" (tag "style" (vcat $ map (text . showcss) css))
-hbody dom = tag "body" (vcat $ map showdom dom)
+hhead css = content "head" (reset $$ content "style" (vcat $ map (text . showcss) css))
+hbody dom = content "body" (vcat $ map showdom dom)
+
+reset = text "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css\">"
 
 addIdsToDom :: [DomNode] -> [DomNode]
 addIdsToDom nodes = fst $ runState (addIds nodes) 0
