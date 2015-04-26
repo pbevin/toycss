@@ -32,6 +32,8 @@ prop_measure doc = counterexample (renderHtml doc) $ monadicIO $ do
 
 disprove :: HtmlDoc -> IO ()
 disprove doc = do
+  putStrLn "Document:"
+  putStrLn $ renderHtml doc
   putStrLn "PhantomJS dimensions:"
   measure doc >>= putStrLn . unlines . map show . Set.toList
   putStrLn "Layout dimensions:"

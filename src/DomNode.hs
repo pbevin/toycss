@@ -35,3 +35,6 @@ alphabet = ['A'..'Z'] ++ ['a'..'z'] ++ " "
 
 alpha = map n alphabet
   where n ch = (domNode "p" [domNodeWithId "a" [ch] [Text [ch, ' ', ch]]])
+
+junk = map n [ [a,b] | a <- ['a'..'z'], b <- ['a'..'z'] ]
+  where n str = (domNodeWithId "span" str [Text (str ++ " " ++ str ++ " " ++ str)])

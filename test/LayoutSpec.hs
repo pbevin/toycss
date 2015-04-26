@@ -11,6 +11,7 @@ sq :: Double -> Dimensions
 sq sz = rect sz sz
 
 para = domNodeWithId "p" "n0" [Text "hi"]
+para2 = domNodeWithId "p" "n1" [Text "hi"]
 a1 = domNodeWithId "a" "n0" [Text "consectetur adipiscing elit"]
 a2 = domNodeWithId "a" "n0" [Text "Vestibulum vel ante"]
 
@@ -33,3 +34,9 @@ spec = do
       layout(htmldoc [] [a2]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (rect 128.765625 16) ]
+
+    it "lays out block elements vertically" $ do
+      layout (htmldoc [] [para, para2]) `shouldBe`
+        Set.fromList [ tag "body" (rect 1024 768),
+                       tag "n0" (0, 1024, 16, 0),
+                       tag "n1" (16, 1024, 32, 0) ]
