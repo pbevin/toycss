@@ -1,11 +1,10 @@
-module GenHtml where
-
-import HtmlNode
+module Html.GenHtml where
 
 import Test.QuickCheck
 import Control.Applicative
 import Data.List
-import ShowHtml
+import Html.ShowHtml
+import Html.HtmlNode
 
 instance Arbitrary HtmlNode where
   arbitrary = sized $ arbNode flowNodes []

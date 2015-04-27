@@ -22,11 +22,11 @@ module Dom
   )
 where
 
-import HtmlNode
-import ShowHtml
-import CssTypes
-import LocateCss
-import GenHtml
-import GenCss
+import Html.HtmlNode
+import Html.ShowHtml
+import Css.CssTypes
+import Css.LocateCss
+import Html.GenHtml
+import Css.GenCss
 import GenHtmlDoc
 import TimesRoman

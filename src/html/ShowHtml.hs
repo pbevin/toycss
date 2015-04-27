@@ -1,7 +1,7 @@
-module ShowHtml where
+module Html.ShowHtml where
 
 import Text.PrettyPrint
-import HtmlNode
+import Html.HtmlNode
 
 pphtml :: HtmlNode -> String
 pphtml = render . showhtml

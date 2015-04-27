@@ -1,9 +1,9 @@
-module GenCss where
+module Css.GenCss where
 
 import Control.Applicative
 import Test.QuickCheck
-import CssTypes
-import ShowCss
+import Css.CssTypes
+import Css.ShowCss
 
 instance Arbitrary CssSelector where
   arbitrary = sized arbSelector

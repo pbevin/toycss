@@ -3,7 +3,7 @@ module LayoutSpec where
 import Test.Hspec
 import Layout
 import GenHtmlDoc
-import HtmlNode
+import Html.HtmlNode
 import Data.Set (Set)
 import qualified Data.Set as Set
 

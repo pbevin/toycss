@@ -1,4 +1,4 @@
-module CssTypes where
+module Css.CssTypes where
 
 data CssSelector = AnyMatch
                  | NameMatch String

@@ -1,4 +1,4 @@
-module HtmlNode where
+module Html.HtmlNode where
 
 import Text.PrettyPrint
 

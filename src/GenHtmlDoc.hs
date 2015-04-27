@@ -3,12 +3,12 @@ module GenHtmlDoc where
 import Control.Monad.State
 import Test.QuickCheck
 import Text.PrettyPrint
-import CssTypes
-import HtmlNode
-import GenCss
-import GenHtml
-import ShowCss
-import ShowHtml
+import Css.CssTypes
+import Html.HtmlNode
+import Css.GenCss
+import Html.GenHtml
+import Css.ShowCss
+import Html.ShowHtml
 
 newtype HtmlDoc = HtmlDoc ([CssRule], [HtmlNode]) deriving Show
 htmldoc :: [CssRule] -> [HtmlNode] -> HtmlDoc

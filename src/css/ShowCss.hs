@@ -1,6 +1,6 @@
-module ShowCss where
+module Css.ShowCss where
 
-import CssTypes
+import Css.CssTypes
 import Data.List
 
 showcss :: CssRule -> String

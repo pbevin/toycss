@@ -6,8 +6,8 @@ import Control.Applicative
 import Control.Monad.Writer
 import Data.Set (Set)
 import qualified Data.Set as Set
-import HtmlNode
-import CssTypes
+import Html.HtmlNode
+import Css.CssTypes
 import GenHtmlDoc
 import TimesRoman
 import Debug.Trace

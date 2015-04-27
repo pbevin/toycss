@@ -1,9 +1,9 @@
-module LocateCss where
+module Css.LocateCss where
 
 import Test.QuickCheck
-import CssTypes
-import ParseCss
-import HtmlNode
+import Css.CssTypes
+import Css.ParseCss
+import Html.HtmlNode
 
 locateCss :: String -> HtmlNode -> [HtmlNode]
 locateCss selector =
