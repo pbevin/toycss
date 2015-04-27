@@ -2,18 +2,18 @@ module LayoutSpec where
 
 import Test.Hspec
 import Layout
-import GenHtml
-import DomNode
+import GenHtmlDoc
+import HtmlNode
 import Data.Set (Set)
 import qualified Data.Set as Set
 
 sq :: Double -> Dimensions
 sq sz = rect sz sz
 
-para = domNodeWithId "p" "n0" [Text "hi"]
-para2 = domNodeWithId "p" "n1" [Text "hi"]
-a1 = domNodeWithId "a" "n0" [Text "consectetur adipiscing elit"]
-a2 = domNodeWithId "a" "n0" [Text "Vestibulum vel ante"]
+para = htmlNodeWithId "p" "n0" [Text "hi"]
+para2 = htmlNodeWithId "p" "n1" [Text "hi"]
+a1 = htmlNodeWithId "a" "n0" [Text "consectetur adipiscing elit"]
+a2 = htmlNodeWithId "a" "n0" [Text "Vestibulum vel ante"]
 
 spec :: Spec
 spec = do

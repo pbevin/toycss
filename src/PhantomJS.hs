@@ -5,7 +5,7 @@ import Test.QuickCheck.Monadic
 import System.IO.Temp
 import System.Process
 import GHC.IO.Handle
-import GenHtml
+import GenHtmlDoc
 import Layout
 import Data.Set (Set)
 import qualified Data.Set as Set

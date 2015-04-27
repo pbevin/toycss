@@ -1,15 +1,15 @@
 module Dom
-  ( DomNode (..)
+  ( HtmlNode (..)
   , NodeAttrs (..)
   , nodeChildren
   , nodeName
   , nodeId
   , nodeClasses
-  , domNode
+  , htmlNode
   , s
   , ss
   , p
-  , ppdom
+  , pphtml
   , CssSelector (..)
   , CssDecl (..)
   , CssRule
@@ -22,11 +22,11 @@ module Dom
   )
 where
 
-import DomNode
-import ShowDom
+import HtmlNode
+import ShowHtml
 import CssTypes
 import LocateCss
-import GenDom
-import GenCss
 import GenHtml
+import GenCss
+import GenHtmlDoc
 import TimesRoman

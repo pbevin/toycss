@@ -1,64 +1,88 @@
 module GenHtml where
 
-import Control.Monad.State
+import HtmlNode
+
 import Test.QuickCheck
-import Text.PrettyPrint
-import CssTypes
-import DomNode
-import GenCss
-import GenDom
-import ShowCss
-import ShowDom
+import Control.Applicative
+import Data.List
+import ShowHtml
 
-newtype HtmlDoc = HtmlDoc ([CssRule], [DomNode]) deriving Show
-htmldoc :: [CssRule] -> [DomNode] -> HtmlDoc
-htmldoc css dom = HtmlDoc (css, dom)
+instance Arbitrary HtmlNode where
+  arbitrary = sized $ arbNode flowNodes []
 
-instance Arbitrary HtmlDoc where
-  arbitrary = genHtml
+arbNode :: [NodeName] -> [NodeName] -> Int -> Gen HtmlNode
+arbNode _ _ 0 = Text <$> arbText
+arbNode allowed forbidden n =
+  oneof [ node 0 n allowed forbidden,
+          node 1 n allowed forbidden,
+          node 2 n allowed forbidden ]
 
-genHtml :: Gen HtmlDoc
-genHtml = do
-  css <- arbitrary
-  dom <- arbitrary
-  return $ HtmlDoc (css, addIdsToDom dom)
+node :: Int -> Int -> [NodeName] -> [NodeName] -> Gen HtmlNode
+node size n allowed forbidden = do
+  name <- elements (allowed \\ forbidden)
+  if size == 0
+  then frequency [ (1, Node <$> arbAttrs name <*> pure []),
+                   (3, nodeWithText name) ]
+  else do
+    let n' = (n-1) `div` size
+    subs <- children name size n' allowed forbidden
+    attrs <- arbAttrs name
+    return $ Node attrs subs
+      where
+        children :: NodeName -> Int -> Int -> [NodeName] -> [NodeName] -> Gen [HtmlNode]
+        children name size n allowed forbidden = vectorOf size $ do
+          let a' = allowed `intersect` (subNodes name)
+          let f' = forbidden `union` (forbiddenSubNodes name)
+          arbNode a' f' n
 
-renderHtml :: HtmlDoc -> String
-renderHtml (HtmlDoc (css, dom)) = render $ pphtml css dom
+arbAttrs :: String -> Gen NodeAttrs
+arbAttrs name = NodeAttrs name <$> pure Nothing <*> arbClasses
+
+arbClasses = oneof [ return [], vectorOf 1 arbClassName, vectorOf 2 arbClassName ]
+arbClassName = elements [ "big", "small", "title", "lhs" ]
+
+nodeWithText name = do
+  attrs <- arbAttrs name
+  text <- Text <$> arbText
+  return $ Node attrs [text]
+
+type NodeName = String
+subNodes :: NodeName -> [NodeName]
+subNodes "body" = flowNodes
+subNodes "a" = flowNodes `union` phrasingNodes
+subNodes "form" = flowNodes
+subNodes _ = phrasingNodes
+
+forbiddenSubNodes :: NodeName -> [NodeName]
+forbiddenSubNodes "form" = ["form"]
+forbiddenSubNodes _ = []
 
 
-h :: IO ()
-h  = generate genHtml >>= putStrLn . renderHtml
+flowNodes = [ "a", "p", "h1", "h2", "h3", "form", "div", "span" ]
+flowNodesNoForm = [ "a", "p", "h1", "h2", "h3", "form", "div", "span" ]
+phrasingNodes = [ "span" ]
 
-content :: String -> Doc -> Doc
-content name doc = vcat [ text ("<" ++ name ++ ">"),
-                      nest 2 doc,
-                      text ("</" ++ name ++ ">") ]
 
-pphtml :: [CssRule] -> [DomNode] -> Doc
-pphtml css dom = content "html" $ hhead css $$ hbody dom
 
-hhead css = content "head" (reset $$ content "style" (vcat $ map (text . showcss) css))
-hbody dom = content "body" (vcat $ map showdom dom)
 
-reset = text "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css\">"
 
-addIdsToDom :: [DomNode] -> [DomNode]
-addIdsToDom nodes = fst $ runState (addIds nodes) 0
+-- flowNodes = [ "a", "abbr", "address", "article", "aside", "audio", "b","bdo", "bdi", "blockquote", "br", "button", "canvas", "cite", "code", "command", "data", "datalist", "del", "details", "dfn", "div", "dl", "em", "embed", "fieldset", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label", "main", "map", "mark", "math", "menu", "meter", "nav", "noscript", "object", "ol", "output", "p", "pre", "progress", "q", "ruby", "s", "samp", "script", "section", "select", "small", "span", "strong", "sub", "sup", "svg", "table", "template", "textarea", "time", "ul", "var", "video", "wbr" ]
+-- sectionNodes = [ "article", "aside", "nav", "section" ]
+-- headingNodes = [ "h1", "h2", "h3", "h4", "h5", "h6", "hgroup" ]
+-- phrasingNodes = [ "abbr", "audio", "b", "bdo", "br", "button", "canvas", "cite", "code", "command", "datalist", "dfn", "em", "embed", "i", "iframe", "img", "input", "kbd", "keygen", "label", "mark", "math", "meter", "noscript", "object", "output", "progress", "q", "ruby", "samp", "script", "select", "small", "span", "strong", "sub", "sup", "svg", "textarea", "time", "var", "video", "wbr" ]
+-- formNodes = [ "button", "fieldset", "input", "keygen", "label", "meter", "object", "output", "progress", "select", "textarea" ]
 
-addIds :: [DomNode] -> State Int [DomNode]
-addIds nodes = mapM addIds' nodes
+arbNodeName :: Gen String
+arbNodeName = elements [ "h1", "h2", "div", "span", "form", "p", "a" ]
 
-addIds' :: DomNode -> State Int DomNode
-addIds' n = case n of
-  Text _ -> return n
-  Node attrs children -> do
-    id <- nextId
-    newChildren <- addIds children
-    return $ Node (setId ("n" ++ show id) attrs) newChildren
+arbNodeNameNoContent :: Gen String
+arbNodeNameNoContent = elements [ "input" ]
 
-nextId :: State Int Int
-nextId = do
-  id <- get
-  put (id + 1)
-  return id
+arbText = elements [ "Lorem Ipsum",
+                     "Dolor sit amet",
+                     "consectetur adipiscing elit",
+                     "Vestibulum vel ante",
+                     "ut turpis dapibus blandit" ]
+
+s  = sample' (arbitrary :: Gen HtmlNode) >>= putStrLn . unlines . map show
+ss = sample' (arbitrary :: Gen HtmlNode) >>= (return . map pphtml) >>= putStrLn . unlines

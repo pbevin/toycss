@@ -1,21 +1,21 @@
-module ShowDom where
+module ShowHtml where
 
 import Text.PrettyPrint
-import DomNode
+import HtmlNode
 
-ppdom :: DomNode -> String
-ppdom = render . showdom
+pphtml :: HtmlNode -> String
+pphtml = render . showhtml
 
-showdom :: DomNode -> Doc
-showdom = showdom' 0
+showhtml :: HtmlNode -> Doc
+showhtml = showhtml' 0
   where
-    showdom' n (Text t) = text t
-    showdom' n node = vcat $
+    showhtml' n (Text t) = text t
+    showhtml' n node = vcat $
       [ angle (nodeOpen node),
-        nest 2 $ cat (map (showdom' $ n+1) $ nodeChildren node),
+        nest 2 $ cat (map (showhtml' $ n+1) $ nodeChildren node),
         angle $ text ("/" ++ nodeName node) ]
 
-nodeOpen :: DomNode -> Doc
+nodeOpen :: HtmlNode -> Doc
 nodeOpen (Node attrs _) =
   sep  [ text $ nName attrs,
          maybe empty (attr "id") (nId attrs),
@@ -30,5 +30,5 @@ attr key value = if null value
 angle :: Doc -> Doc
 angle name = text "<" <> name <> text ">"
 
-p :: DomNode -> IO ()
-p = putStrLn . ppdom
+p :: HtmlNode -> IO ()
+p = putStrLn . pphtml

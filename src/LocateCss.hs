@@ -3,18 +3,18 @@ module LocateCss where
 import Test.QuickCheck
 import CssTypes
 import ParseCss
-import DomNode
+import HtmlNode
 
-locateCss :: String -> DomNode -> [DomNode]
+locateCss :: String -> HtmlNode -> [HtmlNode]
 locateCss selector =
   let css = parseSelector selector
   in map last . filter (pathMatch css) . allPaths
 
-allPaths :: DomNode -> [[DomNode]]
+allPaths :: HtmlNode -> [[HtmlNode]]
 allPaths (Text _) = []
 allPaths node = [[node]] ++ (map (node:) $ concatMap allPaths (nodeChildren node))
 
-pathMatch :: CssSelector -> [DomNode] -> Bool
+pathMatch :: CssSelector -> [HtmlNode] -> Bool
 pathMatch css nodes@(n:ns) = case css of
   AnyMatch -> True
   NameMatch n -> n == nodeName (last nodes)
