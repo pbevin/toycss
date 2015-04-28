@@ -2,13 +2,18 @@ module LayoutSpec where
 
 import Test.Hspec
 import Layout
-import GenHtmlDoc
 import Html.HtmlNode
+import HtmlDoc
+import Dimensions
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Prelude hiding (div)
 
 sq :: Double -> Dimensions
 sq sz = rect sz sz
+
+div :: String -> [HtmlNode] -> HtmlNode
+div id children = htmlNodeWithId "div" id children
 
 para = htmlNodeWithId "p" "n0" [Text "hi"]
 para2 = htmlNodeWithId "p" "n1" [Text "hi"]
@@ -19,24 +24,24 @@ spec :: Spec
 spec = do
   describe "layout" $ do
     it "lays out an empty document" $ do
-      layout (htmldoc [] []) `shouldBe`
+      layout (htmlDoc [] []) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768) ]
 
     it "lays out a simple div" $ do
-      layout (htmldoc [] [para]) `shouldBe`
+      layout (htmlDoc [] [para]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (rect 1024 16) ]
 
     it "lays out an inline element with text" $ do
-      layout(htmldoc [] [a1]) `shouldBe`
+      layout (htmlDoc [] [a1]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (rect 166.921875 16) ]
-      layout(htmldoc [] [a2]) `shouldBe`
+      layout (htmlDoc [] [a2]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (rect 128.765625 16) ]
 
     it "lays out block elements vertically" $ do
-      layout (htmldoc [] [para, para2]) `shouldBe`
+      layout (htmlDoc [] [para, para2]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (0, 1024, 16, 0),
                        tag "n1" (16, 1024, 32, 0) ]

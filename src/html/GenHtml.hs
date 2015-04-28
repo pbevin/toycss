@@ -32,7 +32,9 @@ node size n allowed forbidden = do
         children name size n allowed forbidden = vectorOf size $ do
           let a' = allowed `intersect` (subNodes name)
           let f' = forbidden `union` (forbiddenSubNodes name)
-          arbNode a' f' n
+          if null a'
+          then Text <$> arbText
+          else arbNode a' f' n
 
 arbAttrs :: String -> Gen NodeAttrs
 arbAttrs name = NodeAttrs name <$> pure Nothing <*> arbClasses
@@ -57,7 +59,8 @@ forbiddenSubNodes "form" = ["form"]
 forbiddenSubNodes _ = []
 
 
-flowNodes = [ "a", "p", "h1", "h2", "h3", "form", "div", "span" ]
+-- flowNodes = [ "a", "p", "h1", "h2", "h3", "form", "div", "span" ]
+flowNodes = [ "p", "h1", "h2", "h3", "form", "div" ]
 flowNodesNoForm = [ "a", "p", "h1", "h2", "h3", "form", "div", "span" ]
 phrasingNodes = [ "span" ]
 

@@ -9,19 +9,17 @@ import Css.GenCss
 import Html.GenHtml
 import Css.ShowCss
 import Html.ShowHtml
-
-newtype HtmlDoc = HtmlDoc ([CssRule], [HtmlNode]) deriving Show
-htmldoc :: [CssRule] -> [HtmlNode] -> HtmlDoc
-htmldoc css html = HtmlDoc (css, html)
+import HtmlDoc
 
 instance Arbitrary HtmlDoc where
   arbitrary = genHtml
+  shrink = shrinkHtml
 
 genHtml :: Gen HtmlDoc
 genHtml = do
   css <- arbitrary
   html <- arbitrary
-  return $ HtmlDoc (css, addIdsToHtml html)
+  return $ htmlDoc css $ addIdsToHtml html
 
 renderHtml :: HtmlDoc -> String
 renderHtml (HtmlDoc (css, html)) = render $ ppdoc css html
@@ -62,3 +60,7 @@ nextId = do
   id <- get
   put (id + 1)
   return id
+
+
+shrinkHtml :: HtmlDoc -> [HtmlDoc]
+shrinkHtml (HtmlDoc (css, doc)) = [ HtmlDoc (css', doc') | (css', doc') <- shrink (css, doc) ]

@@ -28,5 +28,6 @@ import Css.CssTypes
 import Css.LocateCss
 import Html.GenHtml
 import Css.GenCss
+import HtmlDoc
 import GenHtmlDoc
 import TimesRoman

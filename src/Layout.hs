@@ -6,19 +6,13 @@ import Control.Applicative
 import Control.Monad.Writer
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Dimensions
 import Html.HtmlNode
 import Css.CssTypes
-import GenHtmlDoc
+import HtmlDoc
 import TimesRoman
 import Debug.Trace
 
-
-type Height = Double
-type Width = Double
-
--- Top, Right, Bottom, Left
-type TaggedDimensions = (String, Double, Double, Double, Double)
-type Dimensions = (Double, Double, Double, Double)
 
 data DisplayType = DisplayInline | DisplayBlock
 data StyleSize = SizePercent Double | SizeAuto
@@ -30,11 +24,11 @@ newtype Layout a = Layout {
 rect :: Double -> Double -> Dimensions
 rect h v = (0, h, v, 0)
 
-boundingBox :: [Dimensions] -> Dimensions
-boundingBox [] = (0,0,0,0)
-boundingBox [d] = d
-boundingBox ((t,r,b,l):ds) = (min t t', max r r', max b b', min l l')
-  where (t',r',b',l') = boundingBox ds
+boundingBoxAll :: [Dimensions] -> Dimensions
+boundingBoxAll [] = (0,0,0,0)
+boundingBoxAll [d] = d
+boundingBoxAll ((t,r,b,l):ds) = (min t t', max r r', max b b', min l l')
+  where (t',r',b',l') = boundingBoxAll ds
 
 runLayout :: Layout a -> (a, Set TaggedDimensions)
 runLayout = runWriter . unLayout
@@ -90,7 +84,7 @@ paintMany width nodes = do
   boxes <- mapM (paintOne width) nodes
   let boxes' = reverse $ snd $ foldl vertical (0,[]) boxes
   mapM (uncurry logDim) $ zip nodes boxes'
-  return (boundingBox boxes)
+  return (boundingBoxAll boxes)
 
 vertical :: (Double,[Dimensions]) -> Dimensions -> (Double,[Dimensions])
 vertical (h,ds) d@(t,r,b,l) = (h+height d,(t+h,r,b+h,l):ds)
@@ -104,53 +98,14 @@ nodeBox node width (t,r,b,l) = (t',r',b',l') where
 
 
 
+
+
+
 paintOne :: Double -> HtmlNode -> Layout Dimensions
 paintOne width (Text t) = return $ rect (textWidth t) 16
 paintOne width node = do
   d <- paintMany width (nodeChildren node)
   return $ nodeBox node width d
-
--- paintBlock :: Dimensions -> [HtmlNode] -> Layout Dimensions
--- paintBlock cdim nodes = do
---   h <- foldM (paintChild cdim) (top cdim) nodes
---   let ndim = setBottom h cdim
---   return ndim
-
-
--- paintChild :: Dimensions -> Height -> HtmlNode -> Layout Height
--- paintChild cdim h (Text t) = return $ h+16
--- paintChild cdim h node = do
---   ndim <- paintBlock (setTop h cdim) (nodeChildren node)
---   logDim node ndim --$
---   return $ h + height ndim
-
-
-
-
-
--- paint :: Dimensions -> HtmlNode -> Layout Dimensions
--- paint cdim (Text text) = return $ writeInline text cdim
--- paint cdim dom = do
---   (h, ds) <- foldM (paintChild $ setHeight 0 cdim) (0, []) $ nodeChildren dom
-
---   let ndim = resizeToBox dom (boundingBox ds) cdim
---   logDim $ tag (maybe "" id $ nodeId dom) ndim
---   return ndim
-
--- paintChild :: Dimensions -> (Double, [Dimensions]) -> HtmlNode -> Layout (Double, [Dimensions])
--- paintChild cdim (h, dims) node = do
---   ndim <- paint (setTop h cdim) node
---   return $ (h + height ndim, ndim : dims)
-
-
-resizeToBox :: HtmlNode -> Dimensions -> Dimensions -> Dimensions
-resizeToBox node (nt,nr,nb,nl) (ct,cr,cb,cl) = (t,r,b,l) where
-  (l,r) = case defaultDisplay (nodeName node) of
-    DisplayBlock -> (cl,cr)
-    DisplayInline -> (nl,nr)
-  (t,b) = case defaultHeight (nodeName node) of
-    SizeAuto -> (nt,nb)
-    _ -> (ct,cb)
 
 
 logDim :: HtmlNode -> Dimensions -> Layout ()
