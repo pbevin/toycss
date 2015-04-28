@@ -1,29 +1,31 @@
 module Css.CssTypes where
 
-data CssSelector = AnyMatch
-                 | NameMatch String
-                 | ClassMatch String
-                 | IdMatch String
-                 | CombinedMatch CssSelector CssSelector
-                 | DescendantMatch CssSelector CssSelector
+type CssSelector = [[CssNodeSpec]]
+
+data CssNodeSpec = Elem String
+                 | Class String
+                 | Id String
                  deriving (Show, Eq)
+
+data Size = Px Double
+          | Pct Double
+          | Em Double
+          deriving (Show, Eq)
 
 data CssDecl = Display String
              | TextAlign String
              | VerticalAlign String
-             | FontSize String
-             | PaddingLeft String
-             | PaddingRight String
-             | PaddingTop String
-             | PaddingBottom String
-             | Padding String String String String
-             | MarginLeft String
-             | MarginRight String
-             | MarginTop String
-             | MarginBottom String
-             | Margin String String String String
-             | Width String
-             | Height String
+             | FontSize Size
+             | PaddingLeft Size
+             | PaddingRight Size
+             | PaddingTop Size
+             | PaddingBottom Size
+             | MarginLeft Size
+             | MarginRight Size
+             | MarginTop Size
+             | MarginBottom Size
+             | Width Size
+             | Height Size
              deriving (Show, Eq)
 
 type CssRule = (CssSelector, [CssDecl])

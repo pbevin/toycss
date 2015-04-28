@@ -4,27 +4,32 @@ import Css.CssTypes
 import Data.List
 
 showcss :: CssRule -> String
-showcss (sel, decls) = showsel sel ++ " { " ++ intercalate "; " (map showdecl decls) ++ " }"
+showcss (sel, decls) = intercalate " " (map (concat . map showsel) sel) ++ " { " ++ intercalate " " (map showdecl decls) ++ " }"
 
-showsel :: CssSelector -> String
-showsel (NameMatch n) = n
-showsel (ClassMatch c) = "." ++ c
-showsel (CombinedMatch a b) = showsel a ++ showsel b
+showsel :: CssNodeSpec -> String
+showsel (Elem n) = n
+showsel (Class c) = "." ++ c
+showsel (Id id) = "#" ++ id
 
 showdecl :: CssDecl -> String
-showdecl (Display d) = "display: " ++ d
-showdecl (TextAlign a) = "text-align: " ++ a
-showdecl (VerticalAlign a) = "vertical-align: " ++ a
-showdecl (FontSize sz) = "font-size: " ++ sz
-showdecl (PaddingLeft sz) = "padding-left: " ++ sz
-showdecl (PaddingRight sz) = "padding-right: " ++ sz
-showdecl (PaddingTop sz) = "padding-top: " ++ sz
-showdecl (PaddingBottom sz) = "padding-bottom: " ++ sz
-showdecl (Padding a b c d) = "padding: " ++ intercalate " " [a,b,c,d]
-showdecl (MarginLeft sz) = "margin-left: " ++ sz
-showdecl (MarginRight sz) = "margin-right: " ++ sz
-showdecl (MarginTop sz) = "margin-top: " ++ sz
-showdecl (MarginBottom sz) = "margin-bottom: " ++ sz
-showdecl (Margin a b c d) = "margin: " ++ intercalate " " [a,b,c,d]
-showdecl (Width w) = "width: " ++ w
-showdecl (Height w) = "height: " ++ w
+showdecl d = txt ++ ";"
+  where
+    txt = case d of
+      Display a -> "display: " ++ a
+      TextAlign a -> "text-align: " ++ a
+      VerticalAlign a -> "vertical-align: " ++ a
+      FontSize sz -> "font-size: " ++ showsz sz
+      PaddingLeft sz -> "padding-left: " ++ showsz sz
+      PaddingRight sz -> "padding-right: " ++ showsz sz
+      PaddingTop sz -> "padding-top: " ++ showsz sz
+      PaddingBottom sz -> "padding-bottom: " ++ showsz sz
+      MarginLeft sz -> "margin-left: " ++ showsz sz
+      MarginRight sz -> "margin-right: " ++ showsz sz
+      MarginTop sz -> "margin-top: " ++ showsz sz
+      MarginBottom sz -> "margin-bottom: " ++ showsz sz
+      Width w -> "width: " ++ showsz w
+      Height w -> "height: " ++ showsz w
+
+showsz (Px sz) = (show sz) ++ "px"
+showsz (Em sz) = (show sz) ++ "em"
+showsz (Pct sz) = (show sz) ++ "%"

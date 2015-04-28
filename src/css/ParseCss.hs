@@ -3,13 +3,13 @@ module Css.ParseCss where
 import Css.CssTypes
 
 parseSelector :: String -> CssSelector
-parseSelector sel = foldl1 DescendantMatch (map parseSingle $ words sel)
+parseSelector sel = map parseSingle $ words sel
 
-parseSingle sel = foldl1 CombinedMatch (map parseMatch $ cssWords sel)
+parseSingle sel = map parseMatch $ cssWords sel
 
-parseMatch ('.':cls) = ClassMatch cls
-parseMatch ('#':id)  = IdMatch id
-parseMatch name      = NameMatch name
+parseMatch ('.':cls) = Class cls
+parseMatch ('#':id)  = Id id
+parseMatch name      = Elem name
 
 
 cssWords :: String -> [String]

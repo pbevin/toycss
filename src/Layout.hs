@@ -21,7 +21,7 @@ type TaggedDimensions = (String, Double, Double, Double, Double)
 type Dimensions = (Double, Double, Double, Double)
 
 data DisplayType = DisplayInline | DisplayBlock
-data Size = SizePercent Double | SizeAuto
+data StyleSize = SizePercent Double | SizeAuto
 
 newtype Layout a = Layout {
   unLayout :: Writer (Set TaggedDimensions) a
@@ -63,7 +63,7 @@ defaultDisplay "a" = DisplayInline
 defaultDisplay "span" = DisplayInline
 defaultDisplay _ = DisplayBlock
 
-defaultHeight :: String -> Size
+defaultHeight :: String -> StyleSize
 defaultHeight "body" = SizePercent 100
 defaultHeight _ = SizeAuto
 

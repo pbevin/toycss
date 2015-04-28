@@ -5,18 +5,22 @@ import Test.QuickCheck
 import Css.CssTypes
 import Css.ShowCss
 
-instance Arbitrary CssSelector where
-  arbitrary = sized arbSelector
+instance Arbitrary CssNodeSpec where
+  arbitrary = arbNodeSpec
 
 instance Arbitrary CssDecl where
   arbitrary = arbDecl
 
-arbSelector n = oneof [ nodeMatch,
-                        CombinedMatch <$> nodeMatch <*> classMatch,
-                        CombinedMatch <$> nodeMatch <*> (CombinedMatch <$> classMatch <*> classMatch) ]
+arbCssRule n = do
+  sel <- arbSelector n
+  rules <- resize n (listOf arbDecl)
+  return (sel, rules)
 
-nodeMatch  = NameMatch  <$> arbNodeName
-classMatch = ClassMatch <$> arbClassName
+
+arbNodeSpec = frequency [ (1, Elem <$> arbNodeName), (3, Class <$> arbClassName) ]
+
+arbSelector :: Int -> Gen CssSelector
+arbSelector n = resize 3 $ listOf (listOf1 arbitrary)
 
 arbNodeName  = elements [ "a", "div", "span", "p" ]
 arbClassName = elements [ "big", "small", "title", "lhs" ]
@@ -30,23 +34,26 @@ arbDecl = oneof [ Display <$> elements [ "block", "inline", "inline-block", "non
                   PaddingRight <$> arbSize,
                   PaddingTop <$> arbSize,
                   PaddingBottom <$> arbSize,
-                  Padding <$> arbSize <*> arbSize <*> arbSize <*> arbSize,
                   MarginLeft <$> arbSize,
                   MarginRight <$> arbSize,
                   MarginTop <$> arbSize,
                   MarginBottom <$> arbSize,
-                  Margin <$> arbSize <*> arbSize <*> arbSize <*> arbSize,
                   Width <$> arbWH,
                   Height <$> arbWH ]
 
 
-arbSize = elements [ "1em", "2em", "3em", "4em",
-                     "0", "1px", "2px", "5px", "10px",
-                     "50%", "150%" ]
+arbSize = elements [
+  Em 1, Em 2, Em 3, Em 4,
+  Px 0, Px 1, Px 2, Px 5, Px 10,
+  Pct 50, Pct 100, Pct 150 ]
+
+-- arbSize = elements [ "1em", "2em", "3em", "4em",
+--                      "0", "1px", "2px", "5px", "10px",
+--                      "50%", "150%" ]
 
 arbWH = do
-  q <- choose (0, 500) :: Gen Int
-  return $ show q ++ "px"
+  size <- choose(0, 500) :: Gen Int
+  return $ Px (fromIntegral size)
 
 
 
