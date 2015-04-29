@@ -53,9 +53,4 @@ domWidth :: DomNode -> Size
 domWidth = width . properties
 
 measureWidth :: DomNode -> Width
-measureWidth node = r - l where (_,r,_,l) = boundingBox node
-
-boundingBoxAll :: [Dimensions] -> Dimensions
-boundingBoxAll [] = zero
-boundingBoxAll xs = foldl1 dimUnion xs
-  where dimUnion (t1,r1,b1,l1) (t2,r2,b2,l2) = (min t1 t2, max r1 r2, max b1 b2, min l1 l2)
+measureWidth node = right d - left d where d = boundingBox node

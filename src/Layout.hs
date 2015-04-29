@@ -22,7 +22,7 @@ paint :: Width -> YPos -> DomNode -> DomNode
 paint w y node =
   if isTextNode node
   then
-    node { boundingBox = (y, (textWidth $ nodeText node), y+16, 0) }
+    node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) 16 }
   else
     let paintedNodes = paintBlock w y (children node)
     in recalcWidth w node { boundingBox = boundingBoxAll (map boundingBox paintedNodes),
@@ -32,7 +32,7 @@ paintBlock :: Width -> YPos -> [DomNode] -> [DomNode]
 paintBlock w y [] = []
 paintBlock w y (node:nodes) =
   let node' = paint w y node
-  in node' : paintBlock w (bottom node') nodes
+  in node' : paintBlock w (bottom $ boundingBox node') nodes
 
 
 
@@ -48,9 +48,6 @@ calcSize node w = case (domWidth node) of
   Px p -> p
   SizeAuto -> measureWidth node
 
-bottom :: DomNode -> YPos
-bottom node = let (_,_,b,_) = boundingBox node in b
-
 getDimensions :: DomNode -> [TaggedDimensions]
 getDimensions node =
   if isTextNode node
@@ -58,8 +55,7 @@ getDimensions node =
   else domTag node : concatMap getDimensions (children node)
 
 domTag :: DomNode -> TaggedDimensions
-domTag node = let (t,r,b,l) = boundingBox node in (domId node, t, r, b, l)
-
+domTag node = tag (domId node) (boundingBox node)
 
 resizeNode :: (Dimensions -> Dimensions) -> DomNode -> DomNode
 resizeNode f node = node { boundingBox = f (boundingBox node) }

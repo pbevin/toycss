@@ -22,26 +22,26 @@ spec = do
   describe "layout" $ do
     it "lays out an empty document" $ do
       layout (htmlDoc [] []) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768) ]
+        Set.fromList [ tag "body" $ rect 1024 768 ]
 
     it "lays out a simple p tag" $ do
       layout (htmlDoc [] [para]) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768),
-                       tag "n0" (rect 1024 16) ]
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 1024 16 ]
 
     it "lays out an inline element with text" $ do
       layout (htmlDoc [] [a1]) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768),
-                       tag "n0" (rect 166.921875 16) ]
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 166.921875 16 ]
       layout (htmlDoc [] [a2]) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768),
-                       tag "n0" (rect 128.765625 16) ]
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 128.765625 16 ]
 
     it "lays out block elements vertically" $ do
       layout (htmlDoc [] [para, para2]) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768),
-                       tag "n0" (0, 1024, 16, 0),
-                       tag "n1" (16, 1024, 32, 0) ]
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 1024 16,
+                       tag "n1" $ D 16 1024 32 0]
 
     it "puts contained elements inside their container" $ do
       let doc = [ div "n0" [ Text "a" ],
@@ -50,6 +50,6 @@ spec = do
 
       layout (htmlDoc [] doc) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
-                       tag "n0" (0, 1024, 16, 0),
-                       tag "n1" (16, 1024, 32, 0),
-                       tag "n2" (16, 1024, 32, 0) ]
+                       tag "n0" $ rect 1024 16,
+                       tag "n1" $ D 16 1024 32 0,
+                       tag "n2" $ D 16 1024 32 0]
