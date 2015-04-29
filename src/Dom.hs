@@ -10,6 +10,7 @@ module Dom
   , ss
   , p
   , pphtml
+  , compactHtml
   , CssSelector (..)
   , CssDecl (..)
   , CssNodeSpec (..)

@@ -37,7 +37,7 @@ ppdoc :: [CssRule] -> [HtmlNode] -> Doc
 ppdoc css html = content "html" $ hhead css $$ hbody html
 
 hhead css = content "head" (reset $$ content "style" (vcat $ map (text . showcss) css))
-hbody html = content "body" (vcat $ map showhtml html)
+hbody html = content "body" (hcat $ map (text . compactHtml) html)
 
 reset = text "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css\">"
 

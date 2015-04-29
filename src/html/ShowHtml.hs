@@ -3,6 +3,16 @@ module Html.ShowHtml where
 import Text.PrettyPrint
 import Html.HtmlNode
 
+compactHtml :: HtmlNode -> String
+compactHtml (Text t) = t
+compactHtml node =
+  concat [ compactOpen node,
+           concatMap compactHtml (nodeChildren node),
+           compactClose node ]
+
+compactOpen node = "<" ++ render (nodeOpen node) ++ ">"
+compactClose node = "</" ++ (nodeName node) ++ ">"
+
 pphtml :: HtmlNode -> String
 pphtml = render . showhtml
 
