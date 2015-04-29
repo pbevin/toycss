@@ -70,3 +70,9 @@ spec = do
       layout (htmlDoc css [divBig]) `shouldBe`
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 1024 24 ]
+
+    it "uses a height property" $ do
+      let css = [ (parseSelector("#n0"), [Height (Px 372)]) ]
+      layout (htmlDoc css [divBig]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 1024 372 ]

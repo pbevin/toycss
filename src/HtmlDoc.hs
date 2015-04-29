@@ -59,6 +59,9 @@ isTextNode node = domId node == "_text"
 domWidth :: DomNode -> Size
 domWidth = width . properties
 
+domHeight :: DomNode -> Size
+domHeight = height . properties
+
 measureWidth :: DomNode -> Width
 measureWidth node = right d - left d where d = boundingBox node
 
@@ -77,11 +80,14 @@ cssMerge' props (_, decls) = foldl cssMerge'' props decls
 cssMerge'' :: BoxProperties -> CssDecl -> BoxProperties
 cssMerge'' props decl = case decl of
   FontSize sz -> updateFontSize sz props
+  Height sz -> updateHeight sz props
   _ -> props
 
 
 updateFontSize :: Size -> BoxProperties -> BoxProperties
 updateFontSize sz props = props { fontSize = scale sz (fontSize props) }
+
+updateHeight sz props = props { height = sz }
 
 scale :: Size -> Double -> Double
 scale (Px p) _ = p
