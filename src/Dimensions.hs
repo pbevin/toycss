@@ -1,7 +1,6 @@
 module Dimensions where
 
-import Control.Applicative
-import Data.Monoid
+import Data.Semigroup
 
 type XPos = Double
 type YPos = Double
@@ -12,9 +11,8 @@ type Width = Double
 type TaggedDimensions = (String, Double, Double, Double, Double)
 data Dimensions = D { top :: Double, right :: Double, bottom :: Double, left :: Double } deriving (Show, Eq)
 
-instance Monoid Dimensions where
-  mempty = zero
-  mappend = dimUnion
+instance Semigroup Dimensions where
+  (<>) = dimUnion
 
 rect :: Double -> Double -> Dimensions
 rect h v = D 0 h v 0
@@ -41,6 +39,7 @@ zero :: Dimensions
 zero = D 0 0 0 0
 
 boundingBoxAll :: [Dimensions] -> Dimensions
+-- boundingBoxAll = mconcat
 boundingBoxAll [] = zero
 boundingBoxAll xs = foldl1 dimUnion xs
 
