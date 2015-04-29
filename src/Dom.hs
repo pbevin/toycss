@@ -12,7 +12,9 @@ module Dom
   , pphtml
   , CssSelector (..)
   , CssDecl (..)
-  , CssRule
+  , CssNodeSpec (..)
+  , Size (..)
+  , BoxProperties
   , locateCss
   , c
   , HtmlDoc (..)

@@ -1,6 +1,7 @@
 module Dimensions where
 
 import Data.Semigroup
+import Data.List.NonEmpty
 
 type XPos = Double
 type YPos = Double
@@ -29,6 +30,9 @@ move x y (D t r b l) = D (t+y) (r+x) (b+y) (l+x)
 moveDown :: YPos -> Dimensions -> Dimensions
 moveDown = move 0
 
+moveRight :: YPos -> Dimensions -> Dimensions
+moveRight x = move x 0
+
 setWidth :: Width -> Dimensions -> Dimensions
 setWidth w d = d { right = left d + w }
 
@@ -39,9 +43,8 @@ zero :: Dimensions
 zero = D 0 0 0 0
 
 boundingBoxAll :: [Dimensions] -> Dimensions
--- boundingBoxAll = mconcat
 boundingBoxAll [] = zero
-boundingBoxAll xs = foldl1 dimUnion xs
+boundingBoxAll xs = sconcat $ fromList xs
 
 dimUnion :: Dimensions -> Dimensions -> Dimensions
 dimUnion (D t r b l) (D t' r' b' l') = D (min t t') (max r r') (max b b') (min l l')

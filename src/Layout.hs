@@ -14,19 +14,22 @@ import TimesRoman
 import Debug.Trace
 
 
-
 layout :: HtmlDoc -> Set TaggedDimensions
-layout doc = Set.fromList $ getDimensions $ recalcHeight 768 $ paint 1024 0 (toDom doc)
+layout = Set.fromList . getDimensions . recalcHeight 768 . paint 1024 0 . toDom
 
 paint :: Width -> YPos -> DomNode -> DomNode
-paint w y node =
-  if isTextNode node
-  then
-    node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) 16 }
-  else
-    let paintedNodes = paintBlock w y (children node)
-    in recalcWidth w node { boundingBox = boundingBoxAll (map boundingBox paintedNodes),
-                            children = paintedNodes }
+paint w y node
+  | isTextNode node =
+      node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) 16 }
+  | otherwise =
+      let paintedNodes = paintChildren w y (children node)
+      in recalcWidth w node {
+           boundingBox = boundingBoxAll (map boundingBox paintedNodes),
+           children    = paintedNodes }
+
+paintChildren :: Width -> YPos -> [DomNode] -> [DomNode]
+paintChildren w y nodes = f w y nodes
+  where f = if allInline nodes then paintInline else paintBlock
 
 paintBlock :: Width -> YPos -> [DomNode] -> [DomNode]
 paintBlock w y [] = []
@@ -35,6 +38,16 @@ paintBlock w y (node:nodes) =
   in node' : paintBlock w (bottom $ boundingBox node') nodes
 
 
+paintInline :: Width -> YPos -> [DomNode] -> [DomNode]
+paintInline w y nodes = paintInline' w 0 y nodes
+  where paintInline' w x y [] = []
+        paintInline' w x y (node:nodes) =
+          let node' = resizeNode (moveRight x) $ paint w y node
+          in node' : paintInline' w (right $ boundingBox node') y nodes
+
+
+allInline :: [DomNode] -> Bool
+allInline = all (== Inline) . map (display . properties)
 
 recalcWidth :: Width -> DomNode -> DomNode
 recalcWidth w node = node { boundingBox = setWidth (calcSize node w) (boundingBox node) }
