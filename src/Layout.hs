@@ -20,7 +20,7 @@ layout = Set.fromList . getDimensions . recalcHeight 768 . paint 1024 0 . toDom
 paint :: Width -> YPos -> DomNode -> DomNode
 paint w y node
   | isTextNode node =
-      node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) 16 }
+      node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) (calcFontSize node) }
   | otherwise =
       let paintedNodes = paintChildren w y (children node)
       in recalcWidth w node {
@@ -57,9 +57,12 @@ recalcHeight h node  = node { boundingBox = setHeight h (boundingBox node) }
 
 calcSize :: DomNode -> Width -> Width
 calcSize node w = case (domWidth node) of
-  Pct p ->  w * p / 100
+  Pct p -> w * p / 100
   Px p -> p
   SizeAuto -> measureWidth node
+
+calcFontSize :: DomNode -> Height
+calcFontSize node = fontSize $ properties node
 
 getDimensions :: DomNode -> [TaggedDimensions]
 getDimensions node =

@@ -6,11 +6,15 @@ import Html.HtmlNode
 import HtmlDoc
 import Dimensions
 import Data.Set (Set)
+import Css.CssTypes
+import Css.ParseCss
 import qualified Data.Set as Set
 import Prelude hiding (div)
 
 div :: String -> [HtmlNode] -> HtmlNode
 div id children = htmlNodeWithId "div" id children
+
+divBig = div "n0" [ Text "hi" ]
 
 para = htmlNodeWithId "p" "n0" [Text "hi"]
 para2 = htmlNodeWithId "p" "n1" [Text "hi"]
@@ -55,7 +59,14 @@ spec = do
                     div "n2" [Text "b" ] ] ]
 
       layout (htmlDoc [] doc) `shouldBe`
-        Set.fromList [ tag "body" (rect 1024 768),
+        Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 1024 16,
                        tag "n1" $ D 16 1024 32 0,
                        tag "n2" $ D 16 1024 32 0]
+
+
+    it "sets a font-size property" $ do
+      let css = [ (parseSelector("#n0"), [FontSize (Pct 150)]) ]
+      layout (htmlDoc css [divBig]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 1024 24 ]

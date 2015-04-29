@@ -14,13 +14,16 @@ module Dom
   , CssDecl (..)
   , CssNodeSpec (..)
   , Size (..)
-  , BoxProperties
+  , BoxProperties (..)
   , locateCss
   , c
   , HtmlDoc (..)
   , h
   , textWidth
   , alpha
+  , parseSelector
+  , toDom
+  , htmlNodeWithId
   )
 where
 
@@ -30,6 +33,7 @@ import Css.CssTypes
 import Css.LocateCss
 import Html.GenHtml
 import Css.GenCss
+import Css.ParseCss
 import HtmlDoc
 import GenHtmlDoc
 import TimesRoman

@@ -1,5 +1,7 @@
 module Css.CssTypes where
 
+import Dimensions
+
 type CssSelector = [[CssNodeSpec]]
 
 data CssNodeSpec = Elem String
@@ -35,5 +37,6 @@ data DisplayType = Inline | Block deriving (Show, Eq)
 
 data BoxProperties = BoxProperties { display :: DisplayType,
                                      width :: Size,
-                                     height :: Size }
+                                     height :: Size,
+                                     fontSize :: Height }
                      deriving (Show, Eq)

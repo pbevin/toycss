@@ -10,6 +10,10 @@ locateCss selector =
   let css = parseSelector selector
   in map last . filter (pathMatch css) . allPaths
 
+matchCss :: [CssRule] -> [HtmlNode] -> [CssRule]
+matchCss css path = filter pm css
+  where pm (sel, rules) = pathMatch sel path
+
 allPaths :: HtmlNode -> [[HtmlNode]]
 allPaths (Text _) = []
 allPaths node = [[node]] ++ (map (node:) $ concatMap allPaths (nodeChildren node))
