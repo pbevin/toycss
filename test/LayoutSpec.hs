@@ -9,9 +9,6 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Prelude hiding (div)
 
-sq :: Double -> Dimensions
-sq sz = rect sz sz
-
 div :: String -> [HtmlNode] -> HtmlNode
 div id children = htmlNodeWithId "div" id children
 
@@ -45,3 +42,14 @@ spec = do
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (0, 1024, 16, 0),
                        tag "n1" (16, 1024, 32, 0) ]
+
+    it "puts contained elements inside their container" $ do
+      let doc = [ div "n0" [ Text "a" ],
+                  div "n1" [
+                    div "n2" [Text "b" ] ] ]
+
+      layout (htmlDoc [] doc) `shouldBe`
+        Set.fromList [ tag "body" (rect 1024 768),
+                       tag "n0" (0, 1024, 16, 0),
+                       tag "n1" (16, 1024, 32, 0),
+                       tag "n2" (16, 1024, 32, 0) ]

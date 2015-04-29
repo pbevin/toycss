@@ -21,9 +21,6 @@ newtype Layout a = Layout {
   unLayout :: Writer (Set TaggedDimensions) a
 } deriving (Monad, MonadWriter (Set TaggedDimensions), Functor, Applicative)
 
-rect :: Double -> Double -> Dimensions
-rect h v = (0, h, v, 0)
-
 boundingBoxAll :: [Dimensions] -> Dimensions
 boundingBoxAll [] = (0,0,0,0)
 boundingBoxAll [d] = d
@@ -32,9 +29,6 @@ boundingBoxAll ((t,r,b,l):ds) = (min t t', max r r', max b b', min l l')
 
 runLayout :: Layout a -> (a, Set TaggedDimensions)
 runLayout = runWriter . unLayout
-
-tag :: String -> Dimensions -> TaggedDimensions
-tag name (t,r,b,l) = (name, t, r, b, l)
 
 setHeight :: Double -> Dimensions -> Dimensions
 setHeight h (t,r,_,l) = (t,r,t+h,l)
