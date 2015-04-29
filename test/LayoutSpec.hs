@@ -24,7 +24,7 @@ spec = do
       layout (htmlDoc [] []) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768) ]
 
-    it "lays out a simple div" $ do
+    it "lays out a simple p tag" $ do
       layout (htmlDoc [] [para]) `shouldBe`
         Set.fromList [ tag "body" (rect 1024 768),
                        tag "n0" (rect 1024 16) ]

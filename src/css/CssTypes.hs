@@ -10,6 +10,7 @@ data CssNodeSpec = Elem String
 data Size = Px Double
           | Pct Double
           | Em Double
+          | SizeAuto
           deriving (Show, Eq)
 
 data CssDecl = Display String
@@ -29,3 +30,10 @@ data CssDecl = Display String
              deriving (Show, Eq)
 
 type CssRule = (CssSelector, [CssDecl])
+
+data DisplayType = Inline | Block deriving (Show, Eq)
+
+data BoxProperties = BoxProperties { display :: DisplayType,
+                                     width :: Size,
+                                     height :: Size }
+                     deriving (Show, Eq)
