@@ -2,7 +2,10 @@ module Css.CssTypes where
 
 import Dimensions
 
-type CssSelector = [[CssNodeSpec]]
+data CssSelector = Sel [[CssNodeSpec]] deriving (Show, Eq)
+
+unsel :: CssSelector -> [[CssNodeSpec]]
+unsel (Sel nss) = nss
 
 data CssNodeSpec = Elem String
                  | Class String

@@ -3,7 +3,7 @@ module Css.ParseCss where
 import Css.CssTypes
 
 parseSelector :: String -> CssSelector
-parseSelector sel = map parseSingle $ words sel
+parseSelector sel = Sel $ map parseSingle $ words sel
 
 parseSingle sel = map parseMatch $ cssWords sel
 

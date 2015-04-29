@@ -17,6 +17,7 @@ module Dom
   , BoxProperties (..)
   , locateCss
   , c
+  , cc
   , HtmlDoc (..)
   , h
   , textWidth

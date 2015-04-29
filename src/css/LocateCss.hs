@@ -7,18 +7,18 @@ import Html.HtmlNode
 
 locateCss :: String -> HtmlNode -> [HtmlNode]
 locateCss selector =
-  let css = parseSelector selector
+  let css = unsel $ parseSelector selector
   in map last . filter (pathMatch css) . allPaths
 
 matchCss :: [CssRule] -> [HtmlNode] -> [CssRule]
 matchCss css path = filter pm css
-  where pm (sel, rules) = pathMatch sel path
+  where pm (Sel sel, rules) = pathMatch sel path
 
 allPaths :: HtmlNode -> [[HtmlNode]]
 allPaths (Text _) = []
 allPaths node = [[node]] ++ (map (node:) $ concatMap allPaths (nodeChildren node))
 
-pathMatch :: CssSelector -> [HtmlNode] -> Bool
+pathMatch :: [[CssNodeSpec]] -> [HtmlNode] -> Bool
 pathMatch _ [] = False
 pathMatch [s] ns = nodeMatch s (last ns)
 pathMatch (s:ss) (n:ns) =

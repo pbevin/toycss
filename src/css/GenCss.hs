@@ -5,6 +5,9 @@ import Test.QuickCheck
 import Css.CssTypes
 import Css.ShowCss
 
+instance Arbitrary CssSelector where
+  arbitrary = sized arbSelector
+
 instance Arbitrary CssNodeSpec where
   arbitrary = arbNodeSpec
 
@@ -20,7 +23,7 @@ arbCssRule n = do
 arbNodeSpec = frequency [ (1, Elem <$> arbNodeName), (3, Class <$> arbClassName) ]
 
 arbSelector :: Int -> Gen CssSelector
-arbSelector n = resize 3 $ listOf (listOf1 arbitrary)
+arbSelector n = resize 3 $ Sel <$> listOf1 (listOf1 arbitrary)
 
 arbNodeName  = elements [ "a", "div", "span", "p" ]
 arbClassName = elements [ "big", "small", "title", "lhs" ]

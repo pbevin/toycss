@@ -4,7 +4,7 @@ import Css.CssTypes
 import Data.List
 
 showcss :: CssRule -> String
-showcss (sel, decls) = intercalate " " (map (concat . map showsel) sel) ++ " { " ++ intercalate " " (map showdecl decls) ++ " }"
+showcss (Sel sel, decls) = intercalate " " (map (concat . map showsel) sel) ++ " { " ++ intercalate " " (map showdecl decls) ++ " }"
 
 showsel :: CssNodeSpec -> String
 showsel (Elem n) = n

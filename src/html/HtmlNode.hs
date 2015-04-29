@@ -18,9 +18,11 @@ nodeChildren (Node _ children) = children
 nodeChildren (Text _) = []
 
 nodeName (Node attrs _) = nName attrs
+nodeName (Text _) = "_text"
 nodeId (Node attrs _) = nId attrs
 nodeId (Text _) = Nothing
 nodeClasses (Node attrs _) = nClass attrs
+nodeClasses (Text _) = []
 
 setId :: String -> NodeAttrs -> NodeAttrs
 setId id attrs = attrs { nId = Just id }
