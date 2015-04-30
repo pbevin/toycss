@@ -24,7 +24,7 @@ paint w y node
   | otherwise =
       let paintedNodes = paintChildren w y (children node)
           boxes = map boundingBox paintedNodes
-      in recalcWidth w $ recalcHeight node {
+      in (fixDisplayNone . recalcWidth w . recalcHeight) node {
            boundingBox = boundingBoxAll ((D y 0 y 0):boxes),
            children    = paintedNodes }
 
@@ -54,6 +54,11 @@ recalcWidth w node = node { boundingBox = setWidth (calcSize node w) (boundingBo
 recalcHeight :: DomNode -> DomNode
 recalcHeight node = case (domHeight node) of
   Px h -> node { boundingBox = setHeight h (boundingBox node) }
+  _ -> node
+
+fixDisplayNone :: DomNode -> DomNode
+fixDisplayNone node = case (display $ properties node) of
+  None -> node { boundingBox = zero }
   _ -> node
 
 calcSize :: DomNode -> Width -> Width

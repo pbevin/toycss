@@ -80,14 +80,14 @@ cssMerge' props (_, decls) = foldl cssMerge'' props decls
 cssMerge'' :: BoxProperties -> CssDecl -> BoxProperties
 cssMerge'' props decl = case decl of
   FontSize sz -> updateFontSize sz props
-  Height sz -> updateHeight sz props
+  Height sz -> props { height = sz }
+  Display dt -> props { display = dt }
   _ -> props
 
 
 updateFontSize :: Size -> BoxProperties -> BoxProperties
 updateFontSize sz props = props { fontSize = scale sz (fontSize props) }
 
-updateHeight sz props = props { height = sz }
 
 scale :: Size -> Double -> Double
 scale (Px p) _ = p

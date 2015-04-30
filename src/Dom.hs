@@ -16,6 +16,7 @@ module Dom
   , CssNodeSpec (..)
   , Size (..)
   , BoxProperties (..)
+  , DisplayType (..)
   , locateCss
   , c
   , cc

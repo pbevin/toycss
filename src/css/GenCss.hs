@@ -29,7 +29,7 @@ arbNodeName  = elements [ "a", "div", "span", "p" ]
 arbClassName = elements [ "big", "small", "title", "lhs" ]
 
 arbDecl :: Gen CssDecl
-arbDecl = oneof [ Display <$> elements [ "block", "inline", "inline-block", "none" ],
+arbDecl = oneof [ Display <$> elements [ Block, Inline, InlineBlock, None ],
                   TextAlign <$> elements [ "left", "right", "center" ],
                   VerticalAlign <$> elements [ "baseline", "sub", "super", "middle", "top", "bottom" ],
                   FontSize <$> arbSize,

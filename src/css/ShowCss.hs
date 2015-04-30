@@ -15,7 +15,7 @@ showdecl :: CssDecl -> String
 showdecl d = txt ++ ";"
   where
     txt = case d of
-      Display a -> "display: " ++ a
+      Display a -> "display: " ++ showdisplay a
       TextAlign a -> "text-align: " ++ a
       VerticalAlign a -> "vertical-align: " ++ a
       FontSize sz -> "font-size: " ++ showsz sz
@@ -33,3 +33,7 @@ showdecl d = txt ++ ";"
 showsz (Px sz) = (show sz) ++ "px"
 showsz (Em sz) = (show sz) ++ "em"
 showsz (Pct sz) = (show sz) ++ "%"
+
+showdisplay Inline = "inline"
+showdisplay Block = "block"
+showdisplay None = "none"

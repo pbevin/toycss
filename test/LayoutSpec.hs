@@ -59,7 +59,6 @@ spec = do
                        tag "n0" $ rect 1024 16,
                        tag "n1" $ D 16 1024 16 0 ]
 
-
     it "puts contained elements inside their container" $ do
       let doc = [ div "n0" [ Text "a" ],
                   div "n1" [
@@ -70,7 +69,6 @@ spec = do
                        tag "n0" $ rect 1024 16,
                        tag "n1" $ D 16 1024 32 0,
                        tag "n2" $ D 16 1024 32 0]
-
 
     it "sets a font-size property" $ do
       let css = [ (parseSelector("#n0"), [FontSize (Pct 150)]) ]
@@ -83,3 +81,10 @@ spec = do
       layout (htmlDoc css [divBig]) `shouldBe`
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 1024 372 ]
+
+    it "understands display:none" $ do
+      let css = [ (parseSelector("#n0"), [Display None]) ]
+      layout (htmlDoc css [para]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 0 0 ]
+

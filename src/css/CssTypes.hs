@@ -18,7 +18,7 @@ data Size = Px Double
           | SizeAuto
           deriving (Show, Eq)
 
-data CssDecl = Display String
+data CssDecl = Display DisplayType
              | TextAlign String
              | VerticalAlign String
              | FontSize Size
@@ -36,7 +36,7 @@ data CssDecl = Display String
 
 type CssRule = (CssSelector, [CssDecl])
 
-data DisplayType = Inline | Block deriving (Show, Eq)
+data DisplayType = Inline | Block | InlineBlock | None deriving (Show, Eq)
 
 data BoxProperties = BoxProperties { display :: DisplayType,
                                      width :: Size,
