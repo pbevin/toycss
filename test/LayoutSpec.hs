@@ -82,6 +82,12 @@ spec = do
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 1024 372 ]
 
+    it "sets a width property" $ do
+      let css = [ (parseSelector("#n0"), [Width (Px 320)]) ]
+      layout (htmlDoc css [divBig]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 320 16 ]
+
     it "understands display:none" $ do
       let css = [ (parseSelector("#n0"), [Display None]) ]
       layout (htmlDoc css [para]) `shouldBe`

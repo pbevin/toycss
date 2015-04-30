@@ -81,6 +81,7 @@ cssMerge'' :: BoxProperties -> CssDecl -> BoxProperties
 cssMerge'' props decl = case decl of
   FontSize sz -> updateFontSize sz props
   Height sz -> props { height = sz }
+  Width sz -> props { width = sz }
   Display dt -> props { display = dt }
   _ -> props
 
