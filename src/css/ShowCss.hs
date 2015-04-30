@@ -34,6 +34,7 @@ showsz (Px sz) = (show sz) ++ "px"
 showsz (Em sz) = (show sz) ++ "em"
 showsz (Pct sz) = (show sz) ++ "%"
 
-showdisplay Inline = "inline"
 showdisplay Block = "block"
+showdisplay Inline = "inline"
+showdisplay InlineBlock = "inline-block"
 showdisplay None = "none"
