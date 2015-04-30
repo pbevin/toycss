@@ -43,7 +43,6 @@ zero :: Dimensions
 zero = D 0 0 0 0
 
 boundingBoxAll :: [Dimensions] -> Dimensions
-boundingBoxAll [] = zero
 boundingBoxAll xs = sconcat $ fromList xs
 
 dimUnion :: Dimensions -> Dimensions -> Dimensions

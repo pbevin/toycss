@@ -23,8 +23,9 @@ paint w y node
       node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) (calcFontSize node) }
   | otherwise =
       let paintedNodes = paintChildren w y (children node)
+          boxes = map boundingBox paintedNodes
       in recalcWidth w $ recalcHeight node {
-           boundingBox = boundingBoxAll (map boundingBox paintedNodes),
+           boundingBox = boundingBoxAll ((D y 0 y 0):boxes),
            children    = paintedNodes }
 
 paintChildren :: Width -> YPos -> [DomNode] -> [DomNode]
@@ -37,14 +38,12 @@ paintBlock w y (node:nodes) =
   let node' = paint w y node
   in node' : paintBlock w (bottom $ boundingBox node') nodes
 
-
 paintInline :: Width -> YPos -> [DomNode] -> [DomNode]
 paintInline w y nodes = paintInline' w 0 y nodes
   where paintInline' w x y [] = []
         paintInline' w x y (node:nodes) =
           let node' = resizeNode (moveRight x) $ paint w y node
           in node' : paintInline' w (right $ boundingBox node') y nodes
-
 
 allInline :: [DomNode] -> Bool
 allInline = all (== Inline) . map (display . properties)

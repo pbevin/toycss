@@ -53,6 +53,13 @@ spec = do
                        tag "n0" $ rect 1024 16,
                        tag "n1" $ D 16 1024 32 0]
 
+    it "generates empty boxes at the right places" $ do
+      layout (htmlDoc [] [para, htmlNodeWithId "p" "n1" []]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ rect 1024 16,
+                       tag "n1" $ D 16 1024 16 0 ]
+
+
     it "puts contained elements inside their container" $ do
       let doc = [ div "n0" [ Text "a" ],
                   div "n1" [
