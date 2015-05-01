@@ -22,10 +22,11 @@ paint w y node
   | isTextNode node =
       node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) (calcFontSize node) }
   | otherwise =
-      let paintedNodes = paintChildren w y (children node)
+      let y' = y + calcMarginTop node
+          paintedNodes = paintChildren w y' (children node)
           boxes = map boundingBox paintedNodes
       in (fixDisplayNone . recalcWidth w . recalcHeight) node {
-           boundingBox = boundingBoxAll ((D y 0 y 0):boxes),
+           boundingBox = boundingBoxAll ((D y' 0 y' 0):boxes),
            children    = paintedNodes }
 
 paintChildren :: Width -> YPos -> [DomNode] -> [DomNode]
@@ -36,7 +37,7 @@ paintBlock :: Width -> YPos -> [DomNode] -> [DomNode]
 paintBlock w y [] = []
 paintBlock w y (node:nodes) =
   let node' = paint w y node
-  in node' : paintBlock w (bottom $ boundingBox node') nodes
+  in node' : paintBlock w (bottom (boundingBox node') + calcMarginBottom node) nodes
 
 paintInline :: Width -> YPos -> [DomNode] -> [DomNode]
 paintInline w y nodes = paintInline' w 0 y nodes
@@ -47,6 +48,21 @@ paintInline w y nodes = paintInline' w 0 y nodes
 
 allInline :: [DomNode] -> Bool
 allInline = all (== Inline) . map (display . properties)
+
+calcMarginTop :: DomNode -> Height
+calcMarginTop node = calcMargin node (marginTop $ properties node)
+
+calcMarginBottom :: DomNode -> Height
+calcMarginBottom node = calcMargin node (marginBottom $ properties node)
+
+calcMargin :: DomNode -> Size -> Height
+calcMargin node size = case size of
+  Em a -> a * fs
+  Pct a -> a * fs / 100
+  Px p -> p
+  SizeAuto -> 0
+  where fs = fontSize (properties node)
+
 
 recalcWidth :: Width -> DomNode -> DomNode
 recalcWidth w node = node { boundingBox = setWidth (calcSize node w) (boundingBox node) }

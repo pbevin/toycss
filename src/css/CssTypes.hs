@@ -41,5 +41,15 @@ data DisplayType = Inline | Block | InlineBlock | None deriving (Show, Eq)
 data BoxProperties = BoxProperties { display :: DisplayType,
                                      width :: Size,
                                      height :: Size,
+                                     marginTop :: Size,
+                                     marginBottom :: Size,
                                      fontSize :: Height }
                      deriving (Show, Eq)
+
+initialProperties :: BoxProperties
+initialProperties = BoxProperties { display = Block,
+                                    width = SizeAuto,
+                                    height = SizeAuto,
+                                    marginTop = Px 0,
+                                    marginBottom = Px 0,
+                                    fontSize = 16 }

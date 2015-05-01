@@ -88,9 +88,21 @@ spec = do
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 320 16 ]
 
+    it "sets margin-top" $ do
+      let css = [ (parseSelector("#n0"), [MarginTop (Px 20)]) ]
+      layout (htmlDoc css [divBig]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ D 20 1024 36 0 ]
+
+    it "sets margin-bottom" $ do
+      let css = [ (parseSelector("#n0"), [MarginBottom (Px 20)]) ]
+      layout (htmlDoc css [divBig, para2]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ D 0 1024 16 0,
+                       tag "n1" $ D 36 1024 52 0 ]
+
     it "understands display:none" $ do
       let css = [ (parseSelector("#n0"), [Display None]) ]
       layout (htmlDoc css [para]) `shouldBe`
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ rect 0 0 ]
-

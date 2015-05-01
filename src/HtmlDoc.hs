@@ -26,16 +26,16 @@ bodyNode :: Dimensions -> [DomNode] -> DomNode
 bodyNode = DomNode (attrs "body") "" bodyProperties
 
 bodyProperties :: BoxProperties
-bodyProperties = BoxProperties Block (Px 1024) (Px 768) 16
+bodyProperties = initialProperties { width=Px 1024, height=Px 768 }
 
 textProperties :: BoxProperties
-textProperties = BoxProperties Inline SizeAuto SizeAuto 16
+textProperties = initialProperties { display=Inline }
 
 elemProperties :: NodeAttrs -> BoxProperties
 elemProperties attrs =
   if nName attrs `elem` inlineElements
-  then BoxProperties Inline SizeAuto SizeAuto 16
-  else BoxProperties Block (Pct 100) SizeAuto 16
+  then initialProperties { display=Inline }
+  else initialProperties { display=Block, width=Pct 100 }
 
 inlineElements = [ "a", "span" ]
 
@@ -65,7 +65,6 @@ domHeight = height . properties
 measureWidth :: DomNode -> Width
 measureWidth node = right d - left d where d = boundingBox node
 
-initialProperties = BoxProperties { display = Block, width = SizeAuto, height = SizeAuto, fontSize = 16 }
 
 
 merge :: BoxProperties -> BoxProperties -> BoxProperties
@@ -82,6 +81,8 @@ cssMerge'' props decl = case decl of
   FontSize sz -> updateFontSize sz props
   Height sz -> props { height = sz }
   Width sz -> props { width = sz }
+  MarginTop sz -> props { marginTop = sz }
+  MarginBottom sz -> props { marginBottom = sz }
   Display dt -> props { display = dt }
   _ -> props
 
