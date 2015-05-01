@@ -39,7 +39,7 @@ ppdoc css html = content "html" $ hhead css $$ hbody html
 hhead css = content "head" (reset $$ content "style" (vcat $ map (text . showcss) css))
 hbody html = content "body" (hcat $ map (text . compactHtml) html)
 
-reset = text "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css\">"
+reset = text $ "<style>" ++ cssReset ++ "</style>"
 
 addIdsToHtml :: [HtmlNode] -> [HtmlNode]
 addIdsToHtml nodes = fst $ runState (addIds nodes) 0
@@ -64,3 +64,7 @@ nextId = do
 
 shrinkHtml :: HtmlDoc -> [HtmlDoc]
 shrinkHtml (HtmlDoc (css, doc)) = [ HtmlDoc (css', doc') | (css', doc') <- shrink (css, doc) ]
+
+
+
+cssReset = "html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1;height:100%}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}table{border-collapse:collapse;border-spacing:0}"
