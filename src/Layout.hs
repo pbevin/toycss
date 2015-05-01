@@ -23,10 +23,11 @@ paint w y node
       node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) (calcFontSize node) }
   | otherwise =
       let y' = y + calcMarginTop node
-          paintedNodes = paintChildren w y' (children node)
+          y'' = y' + calcPaddingTop node
+          paintedNodes = paintChildren w y'' (children node)
           boxes = map boundingBox paintedNodes
       in (fixDisplayNone . recalcWidth w . recalcHeight) node {
-           boundingBox = boundingBoxAll ((D y' 0 y' 0):boxes),
+           boundingBox = boundingBoxAll ((D y'' 0 y'' 0):boxes),
            children    = paintedNodes }
 
 paintChildren :: Width -> YPos -> [DomNode] -> [DomNode]
@@ -50,13 +51,19 @@ allInline :: [DomNode] -> Bool
 allInline = all (== Inline) . map (display . properties)
 
 calcMarginTop :: DomNode -> Height
-calcMarginTop node = calcMargin node (marginTop $ properties node)
+calcMarginTop node = calcHeight node (marginTop $ properties node)
 
 calcMarginBottom :: DomNode -> Height
-calcMarginBottom node = calcMargin node (marginBottom $ properties node)
+calcMarginBottom node = calcHeight node (marginBottom $ properties node)
 
-calcMargin :: DomNode -> Size -> Height
-calcMargin node size = case size of
+calcPaddingTop :: DomNode -> Height
+calcPaddingTop node = calcHeight node (paddingTop $ properties node)
+
+calcPaddingBottom :: DomNode -> Height
+calcPaddingBottom node = calcHeight node (paddingBottom $ properties node)
+
+calcHeight :: DomNode -> Size -> Height
+calcHeight node size = case size of
   Em a -> a * fs
   Pct a -> a * fs / 100
   Px p -> p
@@ -68,10 +75,12 @@ recalcWidth :: Width -> DomNode -> DomNode
 recalcWidth w node = node { boundingBox = setWidth (calcSize node w) (boundingBox node) }
 
 recalcHeight :: DomNode -> DomNode
-recalcHeight node = case (domHeight node) of
-  Px h -> node { boundingBox = setHeight h (boundingBox node) }
-  _ -> node
-
+recalcHeight node = 
+  let h = case (domHeight node) of
+            Px h -> h
+            _ -> boxHeight (boundingBox node)
+      pb = calcPaddingBottom node
+  in node { boundingBox = setHeight (h+pb) (boundingBox node) }
 fixDisplayNone :: DomNode -> DomNode
 fixDisplayNone node = case (display $ properties node) of
   None -> node { boundingBox = zero }

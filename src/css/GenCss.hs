@@ -29,7 +29,7 @@ arbNodeName  = elements [ "a", "div", "span", "p" ]
 arbClassName = elements [ "big", "small", "title", "lhs" ]
 
 arbDecl :: Gen CssDecl
-arbDecl = oneof [ Display <$> elements [ Block, Inline, InlineBlock, None ],
+arbDecl = oneof [ Display <$> elements [ Block, None ],
                   TextAlign <$> elements [ "left", "right", "center" ],
                   VerticalAlign <$> elements [ "baseline", "sub", "super", "middle", "top", "bottom" ],
                   FontSize <$> arbSize,
@@ -41,18 +41,13 @@ arbDecl = oneof [ Display <$> elements [ Block, Inline, InlineBlock, None ],
                   -- MarginRight <$> arbSize,
                   MarginTop <$> arbSize,
                   MarginBottom <$> arbSize,
-                  Width <$> arbWH,
+                  -- Width <$> arbWH,
                   Height <$> arbWH ]
 
 
 arbSize = elements [
   Em 1, Em 2, Em 3, Em 4,
-  Px 0, Px 1, Px 2, Px 5, Px 10,
-  Pct 50, Pct 100, Pct 150 ]
-
--- arbSize = elements [ "1em", "2em", "3em", "4em",
---                      "0", "1px", "2px", "5px", "10px",
---                      "50%", "150%" ]
+  Px 0, Px 1, Px 2, Px 5, Px 10 ]
 
 arbWH = do
   size <- choose(0, 500) :: Gen Int

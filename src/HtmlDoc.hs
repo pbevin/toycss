@@ -83,6 +83,8 @@ cssMerge'' props decl = case decl of
   Width sz -> props { width = sz }
   MarginTop sz -> props { marginTop = sz }
   MarginBottom sz -> props { marginBottom = sz }
+  PaddingTop sz -> props { paddingTop = sz }
+  PaddingBottom sz -> props { paddingBottom = sz }
   Display dt -> props { display = dt }
   _ -> props
 

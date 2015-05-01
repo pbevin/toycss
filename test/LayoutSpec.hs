@@ -14,12 +14,17 @@ import Prelude hiding (div)
 div :: String -> [HtmlNode] -> HtmlNode
 div id children = htmlNodeWithId "div" id children
 
+p :: String -> [HtmlNode] -> HtmlNode
+p id children = htmlNodeWithId "p" id children
+
 divBig = div "n0" [ Text "hi" ]
 
 para = htmlNodeWithId "p" "n0" [Text "hi"]
 para2 = htmlNodeWithId "p" "n1" [Text "hi"]
 a1 = htmlNodeWithId "a" "n2" [Text "consectetur adipiscing elit"]
 a2 = htmlNodeWithId "a" "n3" [Text "Vestibulum vel ante"]
+
+pInDiv = div "n0" [ p "n1" [ Text "hi" ] ]
 
 spec :: Spec
 spec = do
@@ -100,6 +105,14 @@ spec = do
         Set.fromList [ tag "body" $ rect 1024 768,
                        tag "n0" $ D 0 1024 16 0,
                        tag "n1" $ D 36 1024 52 0 ]
+
+    it "sets padding-bottom" $ do
+      let css = [ (parseSelector("#n0"), [PaddingBottom (Px 20)]) ]
+      layout (htmlDoc css [pInDiv]) `shouldBe`
+        Set.fromList [ tag "body" $ rect 1024 768,
+                       tag "n0" $ D 0 1024 36 0,
+                       tag "n1" $ D 0 1024 16 0 ]
+
 
     it "understands display:none" $ do
       let css = [ (parseSelector("#n0"), [Display None]) ]

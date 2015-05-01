@@ -39,6 +39,9 @@ setWidth w d = d { right = left d + w }
 setHeight :: Height -> Dimensions -> Dimensions
 setHeight h d = d { bottom = top d + h }
 
+boxHeight :: Dimensions -> Height
+boxHeight d = bottom d - top d
+
 zero :: Dimensions
 zero = D 0 0 0 0
 

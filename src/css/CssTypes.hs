@@ -43,6 +43,8 @@ data BoxProperties = BoxProperties { display :: DisplayType,
                                      height :: Size,
                                      marginTop :: Size,
                                      marginBottom :: Size,
+                                     paddingTop :: Size,
+                                     paddingBottom :: Size,
                                      fontSize :: Height }
                      deriving (Show, Eq)
 
@@ -52,4 +54,6 @@ initialProperties = BoxProperties { display = Block,
                                     height = SizeAuto,
                                     marginTop = Px 0,
                                     marginBottom = Px 0,
+                                    paddingTop = Px 0,
+                                    paddingBottom = Px 0,
                                     fontSize = 16 }
