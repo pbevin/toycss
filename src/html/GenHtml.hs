@@ -80,11 +80,12 @@ arbNodeName = elements [ "h1", "h2", "div", "span", "form", "p", "a" ]
 arbNodeNameNoContent :: Gen String
 arbNodeNameNoContent = elements [ "input" ]
 
-arbText = elements [ "Lorem Ipsum",
-                     "Dolor sit amet",
-                     "consectetur adipiscing elit",
-                     "Vestibulum vel ante",
-                     "ut turpis dapibus blandit" ]
+arbText = return "a"
+-- arbText = elements [ "Lorem Ipsum",
+--                      "Dolor sit amet",
+--                      "consectetur adipiscing elit",
+--                      "Vestibulum vel ante",
+--                      "ut turpis dapibus blandit" ]
 
 s  = sample' (arbitrary :: Gen HtmlNode) >>= putStrLn . unlines . map show
 ss = sample' (arbitrary :: Gen HtmlNode) >>= (return . map pphtml) >>= putStrLn . unlines

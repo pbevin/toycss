@@ -97,3 +97,4 @@ scale :: Size -> Double -> Double
 scale (Px p) _ = p
 scale (Pct p) x = x * p / 100
 scale (SizeAuto) x = x
+scale (Em e) x = e * x

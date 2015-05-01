@@ -23,11 +23,10 @@ paint w y node
       node { boundingBox = move 0 y $ rect (textWidth $ nodeText node) (calcFontSize node) }
   | otherwise =
       let y' = y + calcMarginTop node
-          y'' = y' + calcPaddingTop node
-          paintedNodes = paintChildren w y'' (children node)
+          paintedNodes = paintChildren w y' (children node)
           boxes = map boundingBox paintedNodes
       in (fixDisplayNone . recalcWidth w . recalcHeight) node {
-           boundingBox = boundingBoxAll ((D y'' 0 y'' 0):boxes),
+           boundingBox = boundingBoxAll ((D y' 0 y' 0):boxes),
            children    = paintedNodes }
 
 paintChildren :: Width -> YPos -> [DomNode] -> [DomNode]
@@ -79,8 +78,9 @@ recalcHeight node =
   let h = case (domHeight node) of
             Px h -> h
             _ -> boxHeight (boundingBox node)
+      pt = calcPaddingTop node
       pb = calcPaddingBottom node
-  in node { boundingBox = setHeight (h+pb) (boundingBox node) }
+  in node { boundingBox = setHeight (pt+h+pb) (boundingBox node) }
 fixDisplayNone :: DomNode -> DomNode
 fixDisplayNone node = case (display $ properties node) of
   None -> node { boundingBox = zero }
